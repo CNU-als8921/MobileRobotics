@@ -16,7 +16,8 @@ planners = []
 for angle in np.linspace(0, 2*np.pi, robot_count, endpoint=False):
     start_x = radius * np.cos(angle)
     start_y = radius * np.sin(angle)
-    robot = Robot(start_x, start_y, 0)
+    start_theta = 0
+    robot = Robot(start_x, start_y, start_theta)
     planner = GoalPlanner(goal_x, goal_y, goal_theta, robot)
     planner.setParameter(3, 8, -1.5)
     planner.setDirection()
