@@ -7,7 +7,6 @@ goal_x = 0
 goal_y = 0
 goal_theta = 180
 
-
 robot = Robot(5, 0, 0)
 planner = GoalPlanner(goal_x, goal_y, goal_theta, robot)
 planner.setParameter(3, 8, -1.5)
@@ -19,7 +18,8 @@ dt = 0.01
 x_paths = []
 y_paths = []
 
-robot.drawRobot()
+if(planner.mode == "FORWARD"): robot.drawRobot(color = 'g')
+elif(planner.mode == "REVERSE"): robot.drawRobot(color = 'r')
 
 for t in np.arange(0, total_time, dt):
         
@@ -36,7 +36,7 @@ plt.plot(x_paths, y_paths)
 
 plt.xlabel('x Position')
 plt.ylabel('y Position')
-plt.title('SingleRobot Trajectory')
+plt.title('Single-Robot Trajectory')
 plt.axis('equal')
 plt.xlim(-8, 8)
 plt.ylim(-8, 8)
