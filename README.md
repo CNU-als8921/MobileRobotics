@@ -14,23 +14,23 @@
     ├── Robot.py            # 로봇 정보, 이동 업데이트
 ```
 
-### 1. Robot 클래스 (utils/Robot.py)
+#### Robot 클래스 (utils/Robot.py)
 
     - 로봇의 현재 위치 (x, y) 와 방향 (theta) 을 관리합니다.
     - 주어진 속도(v, w)에 따라 자세(pose)를 업데이트합니다.
 
-### 2. GoalPlanner 클래스 (utils/GoalPlanner.py)
+#### GoalPlanner 클래스 (utils/GoalPlanner.py)
 
     - 주어진 목표 위치(goal_x, goal_y, goal_theta)로 이동하는 속도(v) 와 회전 속도(w) 를 계산합니다.
     - 전진(Forward) 또는 후진(Reverse) 모드 구현
     - 목표 위치에 도달하면 theta P-Control 수행
 
-### 3. main.py
+#### main.py
 
     - 다수의 로봇을 원형(반지름 5m) 주변에 배치하여 (0, 0) 목표점으로 이동시키는 시뮬레이션을 수행합니다.
     - 각각의 로봇은 개별적인 Robot, GoalPlanner 인스턴스를 사용하여 독립적으로 이동합니다.
 
-### 4. single_robot.py
+#### single_robot.py
 
     - 단일 로봇을 사용하여 기본적인 이동 및 목표 도달 테스트를 수행할 수 있습니다.
 
