@@ -15,13 +15,13 @@ class Robot:
         self.y += v * np.sin(self.getRad())
         self.theta += np.rad2deg(w) * dt
 
-    def drawRobot(self, line_length = 1):
+    def drawRobot(self, line_length = 1, color = 'r'):
 
         dx = line_length * np.cos(np.deg2rad(robot.theta))
         dy = line_length * np.sin(np.deg2rad(robot.theta))
 
-        plt.plot(self.x, self.y, 'o', markersize = 30, color=[1, 0, 0, 0.3], zorder=5)
-        plt.arrow(self.x, self.y, dx, dy, head_width=0, head_length=0, fc='r', ec='r',linewidth=1.5, zorder=5)
+        plt.plot(self.x, self.y, 'o', markersize = 30, color=color, alpha = 0.3, zorder=5)
+        plt.arrow(self.x, self.y, dx, dy, head_width=0, head_length=0, fc=color, ec=color,linewidth=1.5, zorder=5)
         
 class GoalPlanner:
     def __init__(self, desX, desY, desTheta, robot : Robot):
@@ -46,8 +46,8 @@ class GoalPlanner:
         dx = self.X - self.robot.x
         dy = self.Y - self.robot.y
         self.rho = np.sqrt(dx ** 2 + dy ** 2)
-        self.alpha = -self.robot.theta + np.rad2deg(np.atan2(dy, dx))
-        self.beta = -self.robot.theta - self.alpha
+        self.alpha = np.deg2rad(self.saturationDeg(-self.robot.theta + np.rad2deg(np.atan2(dy, dx))))
+        self.beta = np.deg2rad(self.saturationDeg(-self.robot.theta - self.alpha))
 
         print("rho", self.rho)
         print("alpha", self.alpha)
@@ -59,15 +59,16 @@ class GoalPlanner:
 
         return v, w
 
-
+    def saturationDeg(self, deg):
+        return (deg + 180) % 360 - 180
 
 
 
 robot = Robot(0, 0, 0)
 goalPlanner = GoalPlanner(5, 5, 90, robot)
-goalPlanner.setParameter(1, 0.5, 0.5)
+goalPlanner.setParameter(0.01, 0.1, 0.1)
 
-total_time = 100
+total_time = 1000
 dt = 1
 
 x_path = []
@@ -84,7 +85,7 @@ for t in np.arange(0, total_time, dt):
     y_path.append(robot.y)
     theta_path.append(robot.theta)
 
-robot.drawRobot()
+robot.drawRobot(color = 'b')
 
 
 
