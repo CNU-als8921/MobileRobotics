@@ -21,7 +21,7 @@ for angle in angles:
     robot = Robot(start_x, start_y, 0)
     planner = GoalPlanner(goal_x, goal_y, goal_theta, robot)
     planner.setParameter(3, 8, -1.5)
-
+    planner.setDirection()
     robots.append(robot)
     planners.append(planner)
 
@@ -31,8 +31,9 @@ dt = 0.01
 x_paths = [[] for _ in range(robot_count)]
 y_paths = [[] for _ in range(robot_count)]
 
-for robot in robots:
-    robot.drawRobot()
+for i in range(robot_count):
+    if(planners[i].mode == "FORWARD"): robots[i].drawRobot(color = 'g')
+    elif(planners[i].mode == "REVERSE"): robots[i].drawRobot(color = 'r')
 
 for t in np.arange(0, total_time, dt):
     for i in range(robot_count):
@@ -46,13 +47,13 @@ for t in np.arange(0, total_time, dt):
         y_paths[i].append(robot.y)
 
 robot = Robot(goal_x, goal_y, goal_theta)
-robot.drawRobot(color='b')
+robot.drawRobot(color = 'b')
 
 for i in range(robot_count):
-    plt.plot(x_paths[i], y_paths[i])
+    plt.plot(x_paths[i], y_paths[i], color = [0, 0, 0, 0.5])
 
-plt.xlabel('x Position')
-plt.ylabel('y Position')
+plt.xlabel('x [m]')
+plt.ylabel('y [m]')
 plt.title('Multi-Robot Trajectory')
 plt.axis('equal')
 plt.xlim(-8, 8)
