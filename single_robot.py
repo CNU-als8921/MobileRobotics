@@ -11,6 +11,7 @@ goal_theta = 180
 robot = Robot(5, 0, 0)
 planner = GoalPlanner(goal_x, goal_y, goal_theta, robot)
 planner.setParameter(3, 8, -1.5)
+planner.setDirection()
 
 total_time = 10
 dt = 0.01
