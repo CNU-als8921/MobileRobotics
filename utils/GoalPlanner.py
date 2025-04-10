@@ -26,10 +26,8 @@ class GoalPlanner:
 
         if(abs(self.alpha) > np.pi / 2): 
             self.mode = "REVERSE"
-            return "REVERSE"
         else: 
             self.mode = "FORWARD"
-            return "FORWARD"
 
     def setParameter(self, k_r, k_a, k_b):
         self.K_rho = k_r
