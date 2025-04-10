@@ -7,12 +7,9 @@ class Robot:
         self.y = y
         self.theta = theta
 
-    def getRad(self):
-        return np.deg2rad(self.theta)
-
     def updatePoseByVelocity(self, v, w, dt):
-        self.x += v * np.cos(self.getRad())
-        self.y += v * np.sin(self.getRad())
+        self.x += v * np.cos(np.deg2rad(self.theta)) * dt
+        self.y += v * np.sin(np.deg2rad(self.theta)) * dt
         self.theta += np.rad2deg(w) * dt
 
     def drawRobot(self, line_length = 1, color = 'r'):
@@ -25,9 +22,9 @@ class Robot:
         
 class GoalPlanner:
     def __init__(self, desX, desY, desTheta, robot : Robot):
-        self.X = desX
-        self.Y = desY
-        self.Theta = desTheta
+        self.goal_x = desX
+        self.goal_y = desY
+        self.goal_theta = desTheta
         self.rho = 0
         self.alpha = 0
         self.beta = 0
@@ -43,33 +40,31 @@ class GoalPlanner:
         self.K_beta = k_b
 
     def calculateVelocity(self):
-        dx = self.X - self.robot.x
-        dy = self.Y - self.robot.y
-        self.rho = np.sqrt(dx ** 2 + dy ** 2)
-        self.alpha = np.deg2rad(self.saturationDeg(-self.robot.theta + np.rad2deg(np.atan2(dy, dx))))
-        self.beta = np.deg2rad(self.saturationDeg(-self.robot.theta - self.alpha))
+        dx = self.goal_x - self.robot.x
+        dy = self.goal_y - self.robot.y
 
-        print("rho", self.rho)
-        print("alpha", self.alpha)
-        print("beta", self.beta)
+        self.rho = np.sqrt(dx ** 2 + dy ** 2)
+        self.alpha = self.saturationRad(np.arctan2(dy, dx) - np.deg2rad(self.robot.theta))
+        self.beta = self.saturationRad(np.deg2rad(self.goal_theta) - np.arctan2(dy, dx))
+
         v = self.K_rho * self.rho
         w = self.K_alpha * self.alpha + self.K_beta * self.beta
-
-        print(v, w)
-
+    
         return v, w
 
     def saturationDeg(self, deg):
         return (deg + 180) % 360 - 180
+    
 
-
-
+    def saturationRad(self, rad):
+        return (rad + np.pi) % (2 * np.pi) - np.pi
+    
 robot = Robot(0, 0, 0)
-goalPlanner = GoalPlanner(5, 5, 90, robot)
-goalPlanner.setParameter(0.01, 0.1, 0.1)
+goalPlanner = GoalPlanner(5, 5, -90, robot)
+goalPlanner.setParameter(3, 8, -1.5)
 
-total_time = 1000
-dt = 1
+total_time = 100
+dt = 0.01
 
 x_path = []
 y_path = []
@@ -78,11 +73,10 @@ theta_path = []
 robot.drawRobot()
 
 for t in np.arange(0, total_time, dt):
-    v, w = goalPlanner.calculateVelocity()
-    robot.updatePoseByVelocity(v, w, dt)
-
     x_path.append(robot.x)
     y_path.append(robot.y)
+    v, w = goalPlanner.calculateVelocity()
+    robot.updatePoseByVelocity(v, w, dt)
     theta_path.append(robot.theta)
 
 robot.drawRobot(color = 'b')
@@ -90,8 +84,8 @@ robot.drawRobot(color = 'b')
 
 
 plt.plot(x_path, y_path)
-plt.xlabel('X Position')
-plt.ylabel('Y Position')
+plt.xlabel('x Position')
+plt.ylabel('y Position')
 plt.title('Robot Trajectory')
 plt.axis('equal')
 plt.grid()
