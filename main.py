@@ -10,12 +10,10 @@ goal_x = 0
 goal_y = 0
 goal_theta = 180
 
-angles = np.linspace(0, 2*np.pi, robot_count, endpoint=False)
-
 robots = []
 planners = []
 
-for angle in angles:
+for angle in np.linspace(0, 2*np.pi, robot_count, endpoint=False):
     start_x = radius * np.cos(angle)
     start_y = radius * np.sin(angle)
     robot = Robot(start_x, start_y, 0)
@@ -37,8 +35,8 @@ for i in range(robot_count):
 
 for t in np.arange(0, total_time, dt):
     for i in range(robot_count):
-        robot = robots[i]
-        planner = planners[i]
+        robot : Robot = robots[i]
+        planner : GoalPlanner = planners[i]
         
         v, w = planner.calculateVelocity()
         robot.updatePoseByVelocity(v, w, dt)
