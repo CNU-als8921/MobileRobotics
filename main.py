@@ -2,35 +2,60 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.Robot import Robot
 from utils.GoalPlanner import GoalPlanner
-    
-robot = Robot(0, 0, 0)
-goalPlanner = GoalPlanner(-5, -5, -90, robot)
-goalPlanner.setParameter(3, 8, -1.5)
 
-total_time = 100
+radius = 5
+robot_count = 8
+
+goal_x = 0
+goal_y = 0
+goal_theta = 90
+
+angles = np.linspace(0, 2*np.pi, robot_count, endpoint=False)
+
+robots = []
+planners = []
+
+for angle in angles:
+    start_x = radius * np.cos(angle)
+    start_y = radius * np.sin(angle)
+    robot = Robot(start_x, start_y, 0)
+    planner = GoalPlanner(goal_x, goal_y, goal_theta, robot)
+    planner.setParameter(3, 8, -1.5)
+
+    robots.append(robot)
+    planners.append(planner)
+
+total_time = 10
 dt = 0.01
 
-x_path = []
-y_path = []
-theta_path = []
+x_paths = [[] for _ in range(robot_count)]
+y_paths = [[] for _ in range(robot_count)]
 
-robot.drawRobot()
+for robot in robots:
+    robot.drawRobot()
 
 for t in np.arange(0, total_time, dt):
-    x_path.append(robot.x)
-    y_path.append(robot.y)
-    v, w = goalPlanner.calculateVelocity()
-    robot.updatePoseByVelocity(v, w, dt)
-    theta_path.append(robot.theta)
+    for i in range(robot_count):
+        robot = robots[i]
+        planner = planners[i]
+        
+        v, w = planner.calculateVelocity()
+        robot.updatePoseByVelocity(v, w, dt)
 
-robot.drawRobot(color = 'b')
+        x_paths[i].append(robot.x)
+        y_paths[i].append(robot.y)
 
+robot = Robot(0, 0, 0)
+robot.drawRobot(color='b')
 
+for i in range(robot_count):
+    plt.plot(x_paths[i], y_paths[i])
 
-plt.plot(x_path, y_path)
 plt.xlabel('x Position')
 plt.ylabel('y Position')
-plt.title('Robot Trajectory')
+plt.title('Multi-Robot Trajectory')
 plt.axis('equal')
+plt.xlim(-8, 8)
+plt.ylim(-8, 8)
 plt.grid()
 plt.show()
