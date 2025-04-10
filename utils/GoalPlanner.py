@@ -10,9 +10,6 @@ class GoalPlanner:
         self.goal_x = desX
         self.goal_y = desY
         self.goal_theta = desTheta
-        self.rho = 0
-        self.alpha = 0
-        self.beta = 0
         self.robot = robot
 
         self.K_rho = 0
@@ -44,31 +41,25 @@ class GoalPlanner:
         dy = self.goal_y - self.robot.y
 
         path_theta = np.arctan2(dy, dx)
-
         if self.mode == "REVERSE":
             path_theta = self.saturationRad(path_theta + np.pi)
 
-        self.rho = np.sqrt(dx ** 2 + dy ** 2)
-        self.alpha = self.saturationRad(path_theta - np.deg2rad(self.robot.theta))
-        self.beta = self.saturationRad(np.deg2rad(self.goal_theta) - path_theta)
+        rho = np.hypot(dx, dy)
+        alpha = self.saturationRad(path_theta - np.deg2rad(self.robot.theta))
+        beta = self.saturationRad(np.deg2rad(self.goal_theta) - path_theta)
 
-        v = self.K_rho * self.rho
-        w = self.K_alpha * self.alpha + self.K_beta * self.beta
-
+        v = self.K_rho * rho
+        w = self.K_alpha * alpha + self.K_beta * beta
 
         if self.mode == "REVERSE":
             v = -v
 
-        if self.rho < 0.05:
+        if rho < 0.05:
             v = 0
             heading_error = self.saturationRad(np.deg2rad(self.goal_theta) - np.deg2rad(self.robot.theta))
             w = 1.0 * heading_error
     
         return v, w
-
-    def saturationDeg(self, deg):
-        return (deg + 180) % 360 - 180
-    
 
     def saturationRad(self, rad):
         return (rad + np.pi) % (2 * np.pi) - np.pi
