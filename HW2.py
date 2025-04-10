@@ -49,6 +49,11 @@ class GoalPlanner:
 
         v = self.K_rho * self.rho
         w = self.K_alpha * self.alpha + self.K_beta * self.beta
+
+        if self.rho < 0.05:
+            v = 0
+            heading_error = self.saturationRad(np.deg2rad(self.goal_theta) - np.deg2rad(self.robot.theta))
+            w = 1.0 * heading_error
     
         return v, w
 
@@ -60,7 +65,7 @@ class GoalPlanner:
         return (rad + np.pi) % (2 * np.pi) - np.pi
     
 robot = Robot(0, 0, 0)
-goalPlanner = GoalPlanner(5, 5, -90, robot)
+goalPlanner = GoalPlanner(-5, -5, -90, robot)
 goalPlanner.setParameter(3, 8, -1.5)
 
 total_time = 100
