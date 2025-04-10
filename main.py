@@ -8,7 +8,7 @@ robot_count = 8
 
 goal_x = 0
 goal_y = 0
-goal_theta = 90
+goal_theta = 180
 
 angles = np.linspace(0, 2*np.pi, robot_count, endpoint=False)
 
@@ -45,7 +45,7 @@ for t in np.arange(0, total_time, dt):
         x_paths[i].append(robot.x)
         y_paths[i].append(robot.y)
 
-robot = Robot(0, 0, 0)
+robot = Robot(goal_x, goal_y, goal_theta)
 robot.drawRobot(color='b')
 
 for i in range(robot_count):
