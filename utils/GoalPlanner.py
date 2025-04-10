@@ -19,6 +19,21 @@ class GoalPlanner:
         self.K_alpha = 0
         self.K_beta = 0
 
+        self.mode = "FORWARD"
+
+    def setDirection(self):
+        dx = self.goal_x - self.robot.x
+        dy = self.goal_y - self.robot.y
+
+        self.alpha = self.saturationRad(np.arctan2(dy, dx) - np.deg2rad(self.robot.theta))
+
+        if(abs(self.alpha) > np.pi / 2): 
+            self.mode = "REVERSE"
+            return "REVERSE"
+        else: 
+            self.mode = "FORWARD"
+            return "FORWARD"
+
     def setParameter(self, k_r, k_a, k_b):
         self.K_rho = k_r
         self.K_alpha = k_a
@@ -28,12 +43,21 @@ class GoalPlanner:
         dx = self.goal_x - self.robot.x
         dy = self.goal_y - self.robot.y
 
+        path_theta = np.arctan2(dy, dx)
+
+        if self.mode == "REVERSE":
+            path_theta = self.saturationRad(path_theta + np.pi)
+
         self.rho = np.sqrt(dx ** 2 + dy ** 2)
-        self.alpha = self.saturationRad(np.arctan2(dy, dx) - np.deg2rad(self.robot.theta))
-        self.beta = self.saturationRad(np.deg2rad(self.goal_theta) - np.arctan2(dy, dx))
+        self.alpha = self.saturationRad(path_theta - np.deg2rad(self.robot.theta))
+        self.beta = self.saturationRad(np.deg2rad(self.goal_theta) - path_theta)
 
         v = self.K_rho * self.rho
         w = self.K_alpha * self.alpha + self.K_beta * self.beta
+
+
+        if self.mode == "REVERSE":
+            v = -v
 
         if self.rho < 0.05:
             v = 0
