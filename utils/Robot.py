@@ -17,6 +17,6 @@ class Robot:
         dx = line_length * np.cos(np.deg2rad(self.theta))
         dy = line_length * np.sin(np.deg2rad(self.theta))
 
-        plt.plot(self.x, self.y, 'o', markersize = 30, color=color, alpha = 0.3, zorder=5)
+        plt.plot(self.x, self.y, 'o', markersize = 15, color=color, alpha = 0.3, zorder=5)
         plt.arrow(self.x, self.y, dx, dy, head_width=0, head_length=0, fc=color, ec=color,linewidth=1.5, zorder=5)
         
